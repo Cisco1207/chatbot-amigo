@@ -1,121 +1,84 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { nanoid } from "nanoid";
+import { v4 as uuidv4 } from "uuid";
 import { 
-  insertMessageSchema, 
-  insertReportSchema 
+  insertChatMessageSchema,
+  insertReportSchema
 } from "@shared/schema";
-import { z } from "zod";
+import { getChatbotResponse } from "../shared/chatbotLogic";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Create a new session
-  app.post("/api/sessions", async (req: Request, res: Response) => {
-    const sessionId = nanoid();
-    
-    // Create welcome message from bot
-    await storage.createMessage({
-      text: "¡Hola! Soy AmigBot, tu asistente contra el bullying. Estoy aquí para escucharte y ayudarte. ¿Cómo puedo apoyarte hoy?",
-      sender: "bot",
-      timestamp: Date.now(),
-      sessionId
-    });
-    
-    // Get initial response with quick replies
-    const initialResponse = await storage.getResponseByPattern("hola");
-    
-    res.json({ 
-      sessionId,
-      initialResponse 
-    });
-  });
-  
-  // Get all messages for a session
-  app.get("/api/sessions/:sessionId/messages", async (req: Request, res: Response) => {
-    const { sessionId } = req.params;
-    const messages = await storage.getMessagesBySessionId(sessionId);
-    res.json(messages);
-  });
-  
-  // Send a message and get a response
-  app.post("/api/sessions/:sessionId/messages", async (req: Request, res: Response) => {
-    const { sessionId } = req.params;
-    
+  // API routes
+  const apiRouter = app.route('/api');
+
+  // Chat messages routes
+  app.get('/api/chat/:sessionId', async (req: Request, res: Response) => {
     try {
-      // Validate the request body
-      const validatedBody = insertMessageSchema.parse({
-        ...req.body,
-        sessionId,
-        timestamp: Date.now(),
-        sender: "user"
-      });
-      
-      // Store user message
-      const userMessage = await storage.createMessage(validatedBody);
-      
-      // Generate bot response based on message content
-      const botResponse = await storage.getResponseByPattern(validatedBody.text);
-      
-      // Store bot response
-      const botMessage = await storage.createMessage({
-        text: botResponse?.text || "Lo siento, no entendí eso. ¿Puedes intentar con otras palabras?",
-        sender: "bot",
-        timestamp: Date.now(),
-        sessionId
-      });
-      
-      // Get resource if applicable
-      let resource = undefined;
-      if (botResponse?.resourceId) {
-        resource = await storage.getResourceById(botResponse.resourceId);
-      }
-      
-      res.json({
-        userMessage,
-        botMessage,
-        quickReplies: botResponse?.quickReplies || [],
-        resource
-      });
+      const sessionId = req.params.sessionId;
+      const messages = await storage.getChatMessagesBySessionId(sessionId);
+      res.json(messages);
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        res.status(400).json({ error: "Mensaje inválido", details: error.errors });
-      } else {
-        res.status(500).json({ error: "Error al procesar el mensaje" });
-      }
+      res.status(500).json({ message: 'Error al obtener mensajes', error });
     }
   });
-  
-  // Get all resources
-  app.get("/api/resources", async (req: Request, res: Response) => {
-    const resources = await storage.getAllResources();
-    res.json(resources);
-  });
-  
-  // Get resources by category
-  app.get("/api/resources/category/:category", async (req: Request, res: Response) => {
-    const { category } = req.params;
-    const resources = await storage.getResourcesByCategory(category);
-    res.json(resources);
-  });
-  
-  // Submit a bullying report
-  app.post("/api/reports", async (req: Request, res: Response) => {
+
+  app.post('/api/chat', async (req: Request, res: Response) => {
     try {
       // Validate request body
-      const validatedBody = insertReportSchema.parse({
-        ...req.body,
-        timestamp: Date.now()
+      const parsed = insertChatMessageSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: 'Datos inválidos', errors: parsed.error });
+      }
+      
+      // Create user message
+      const userMessage = await storage.createChatMessage(parsed.data);
+      
+      // Generate bot response
+      const botResponse = getChatbotResponse(parsed.data.content);
+      
+      // Store bot response
+      const botMessage = await storage.createChatMessage({
+        sessionId: parsed.data.sessionId,
+        content: botResponse,
+        sender: 'bot'
       });
       
-      // Store the report
-      const report = await storage.createReport(validatedBody);
-      res.json(report);
+      res.json({ userMessage, botMessage });
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        res.status(400).json({ error: "Reporte inválido", details: error.errors });
-      } else {
-        res.status(500).json({ error: "Error al crear el reporte" });
+      res.status(500).json({ message: 'Error al procesar el mensaje', error });
+    }
+  });
+
+  // Session initialization
+  app.get('/api/session/new', (req: Request, res: Response) => {
+    const sessionId = uuidv4();
+    res.json({ sessionId });
+  });
+
+  // Reports routes
+  app.post('/api/reports', async (req: Request, res: Response) => {
+    try {
+      // Validate request body
+      const parsed = insertReportSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: 'Datos inválidos', errors: parsed.error });
       }
+      
+      // Create report
+      const report = await storage.createReport(parsed.data);
+      res.status(201).json(report);
+    } catch (error) {
+      res.status(500).json({ message: 'Error al crear el reporte', error });
+    }
+  });
+
+  app.get('/api/reports', async (req: Request, res: Response) => {
+    try {
+      const reports = await storage.getAllReports();
+      res.json(reports);
+    } catch (error) {
+      res.status(500).json({ message: 'Error al obtener reportes', error });
     }
   });
 
