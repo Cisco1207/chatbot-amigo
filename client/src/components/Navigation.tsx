@@ -1,8 +1,10 @@
 import { useContext } from "react";
 import { AppContext } from "@/context/AppContext";
+import { Link, useLocation } from "wouter";
 
 export default function Navigation() {
   const { activeSection, setActiveSection } = useContext(AppContext);
+  const [location] = useLocation();
 
   return (
     <nav className="hidden md:block w-72 bg-gradient-to-b from-slate-50 to-white rounded-xl border border-slate-100 shadow-lg p-5 overflow-hidden">
@@ -10,18 +12,20 @@ export default function Navigation() {
         <div className="text-sm font-semibold text-slate-500 mb-4 ml-2 tracking-wide">NAVEGACIÓN</div>
         <ul className="space-y-2">
           <li>
-            <button 
-              onClick={() => setActiveSection('chat')}
-              className={`w-full flex items-center p-3.5 rounded-xl transition-all duration-300 ${
-                activeSection === 'chat' 
-                  ? 'bg-gradient-to-r from-blue-500 to-teal-500 text-white shadow-md transform scale-105' 
-                  : 'text-slate-700 hover:bg-slate-100 hover:shadow-sm'
-              }`}
-            >
-              <span className={`material-icons mr-3 ${activeSection === 'chat' ? 'animate-pulse' : ''}`}>forum</span>
-              <span className="font-medium">Chat</span>
-              {activeSection === 'chat' && <span className="ml-auto text-xs bg-white text-blue-600 px-2 py-0.5 rounded-full">Activo</span>}
-            </button>
+            <Link href="/">
+              <a
+                onClick={() => setActiveSection('chat')}
+                className={`w-full flex items-center p-3.5 rounded-xl transition-all duration-300 ${
+                  activeSection === 'chat' || location === '/'
+                    ? 'bg-gradient-to-r from-blue-500 to-teal-500 text-white shadow-md transform scale-105' 
+                    : 'text-slate-700 hover:bg-slate-100 hover:shadow-sm'
+                }`}
+              >
+                <span className={`material-icons mr-3 ${activeSection === 'chat' ? 'animate-pulse' : ''}`}>forum</span>
+                <span className="font-medium">Chat</span>
+                {(activeSection === 'chat' || location === '/') && <span className="ml-auto text-xs bg-white text-blue-600 px-2 py-0.5 rounded-full">Activo</span>}
+              </a>
+            </Link>
           </li>
           
           <li>
@@ -40,18 +44,19 @@ export default function Navigation() {
           </li>
           
           <li>
-            <button 
-              onClick={() => setActiveSection('report')}
-              className={`w-full flex items-center p-3.5 rounded-xl transition-all duration-300 ${
-                activeSection === 'report' 
-                  ? 'bg-gradient-to-r from-blue-500 to-teal-500 text-white shadow-md transform scale-105' 
-                  : 'text-slate-700 hover:bg-slate-100 hover:shadow-sm'
-              }`}
-            >
-              <span className="material-icons mr-3">report_problem</span>
-              <span className="font-medium">Reportar</span>
-              {activeSection === 'report' && <span className="ml-auto text-xs bg-white text-blue-600 px-2 py-0.5 rounded-full">Activo</span>}
-            </button>
+            <Link href="/reportar">
+              <a
+                className={`w-full flex items-center p-3.5 rounded-xl transition-all duration-300 ${
+                  location === '/reportar'
+                    ? 'bg-gradient-to-r from-blue-500 to-teal-500 text-white shadow-md transform scale-105' 
+                    : 'text-slate-700 hover:bg-slate-100 hover:shadow-sm'
+                }`}
+              >
+                <span className="material-icons mr-3">report_problem</span>
+                <span className="font-medium">Reportar</span>
+                {location === '/reportar' && <span className="ml-auto text-xs bg-white text-blue-600 px-2 py-0.5 rounded-full">Activo</span>}
+              </a>
+            </Link>
           </li>
           
           <li>
