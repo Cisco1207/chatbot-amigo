@@ -69,34 +69,34 @@ export default function Resources() {
 
         <Separator className="my-6" />
 
-        <div className="bg-primary bg-opacity-5 p-6 rounded-xl">
+        <div className="bg-primary/10 p-6 rounded-xl">
           <h2 className="text-xl font-bold text-primary mb-3">Líneas de Ayuda</h2>
-          <p className="text-neutral-700 mb-4">
+          <div className="text-neutral-700 mb-4">
             Si necesitas hablar con alguien de manera urgente, estas líneas de ayuda están disponibles:
-          </p>
-          <ul className="space-y-3">
-            <li className="flex items-center">
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center">
               <i className="fas fa-phone-alt text-primary mr-3"></i>
               <div>
-                <p className="font-semibold">Línea Nacional Contra el Bullying</p>
-                <p className="text-neutral-600">800-123-4567</p>
+                <div className="font-semibold">Línea Nacional Contra el Bullying</div>
+                <div className="text-neutral-600">800-123-4567</div>
               </div>
-            </li>
-            <li className="flex items-center">
+            </div>
+            <div className="flex items-center">
               <i className="fas fa-comments text-primary mr-3"></i>
               <div>
-                <p className="font-semibold">Chat de Crisis</p>
-                <p className="text-neutral-600">www.chatayuda.org</p>
+                <div className="font-semibold">Chat de Crisis</div>
+                <div className="text-neutral-600">www.chatayuda.do</div>
               </div>
-            </li>
-            <li className="flex items-center">
+            </div>
+            <div className="flex items-center">
               <i className="fas fa-envelope text-primary mr-3"></i>
               <div>
-                <p className="font-semibold">Correo de Ayuda</p>
-                <p className="text-neutral-600">ayuda@antibullying.org</p>
+                <div className="font-semibold">Correo de Ayuda</div>
+                <div className="text-neutral-600">ayuda@antibullying.do</div>
               </div>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       </div>
     </ScrollArea>
