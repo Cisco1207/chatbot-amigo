@@ -2,6 +2,8 @@ import React from "react";
 import Header from "./Header";
 import Navigation from "./Navigation";
 import MobileNavigation from "./MobileNavigation";
+import HelpButton from "./Help/HelpButton";
+import HelpModal from "./Help/HelpModal";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -28,6 +30,12 @@ export default function Layout({ children }: LayoutProps) {
         <div className="block md:hidden fixed bottom-0 right-0 left-0 z-10 bg-white shadow-lg">
           <MobileNavigation />
         </div>
+        
+        {/* Botón de ayuda flotante */}
+        <HelpButton />
+        
+        {/* Modal de ayuda */}
+        <HelpModal />
       </main>
     </div>
   );
