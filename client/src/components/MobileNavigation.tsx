@@ -28,22 +28,23 @@ export default function MobileNavigation() {
           </a>
         </Link>
         
-        <button 
-          onClick={() => setActiveSection('resources')}
-          className={`flex flex-col items-center justify-center w-20 py-2 rounded-xl transition-all ${
-            activeSection === 'resources' 
-              ? 'text-blue-600 bg-blue-50' 
-              : 'text-slate-500 hover:bg-slate-50'
-          }`}
-        >
-          <div className={`rounded-full p-1.5 ${activeSection === 'resources' ? 'bg-blue-100' : ''}`}>
-            <span className="material-icons text-xl">auto_stories</span>
-          </div>
-          <span className="text-xs font-medium mt-1">Recursos</span>
-          {activeSection === 'resources' && (
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-600 absolute bottom-0.5"></span>
-          )}
-        </button>
+        <Link href="/recursos">
+          <a
+            className={`flex flex-col items-center justify-center w-20 py-2 rounded-xl transition-all ${
+              location === '/recursos'
+                ? 'text-blue-600 bg-blue-50' 
+                : 'text-slate-500 hover:bg-slate-50'
+            }`}
+          >
+            <div className={`rounded-full p-1.5 ${location === '/recursos' ? 'bg-blue-100' : ''}`}>
+              <span className="material-icons text-xl">auto_stories</span>
+            </div>
+            <span className="text-xs font-medium mt-1">Recursos</span>
+            {location === '/recursos' && (
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600 absolute bottom-0.5"></span>
+            )}
+          </a>
+        </Link>
         
         <Link href="/reportar">
           <a
@@ -63,22 +64,23 @@ export default function MobileNavigation() {
           </a>
         </Link>
         
-        <button 
-          onClick={() => setActiveSection('learn')}
-          className={`flex flex-col items-center justify-center w-20 py-2 rounded-xl transition-all ${
-            activeSection === 'learn' 
-              ? 'text-blue-600 bg-blue-50' 
-              : 'text-slate-500 hover:bg-slate-50'
-          }`}
-        >
-          <div className={`rounded-full p-1.5 ${activeSection === 'learn' ? 'bg-blue-100' : ''}`}>
-            <span className="material-icons text-xl">school</span>
-          </div>
-          <span className="text-xs font-medium mt-1">Aprender</span>
-          {activeSection === 'learn' && (
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-600 absolute bottom-0.5"></span>
-          )}
-        </button>
+        <Link href="/aprender">
+          <a
+            className={`flex flex-col items-center justify-center w-20 py-2 rounded-xl transition-all ${
+              location === '/aprender'
+                ? 'text-blue-600 bg-blue-50' 
+                : 'text-slate-500 hover:bg-slate-50'
+            }`}
+          >
+            <div className={`rounded-full p-1.5 ${location === '/aprender' ? 'bg-blue-100' : ''}`}>
+              <span className="material-icons text-xl">school</span>
+            </div>
+            <span className="text-xs font-medium mt-1">Aprender</span>
+            {location === '/aprender' && (
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600 absolute bottom-0.5"></span>
+            )}
+          </a>
+        </Link>
       </div>
     </nav>
   );

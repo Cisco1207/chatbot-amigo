@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import Layout from "@/components/Layout";
 import Home from "@/pages/Home";
 import ReportPage from "@/pages/ReportPage";
+import ResourcesPage from "@/pages/ResourcesPage";
+import LearnPage from "@/pages/LearnPage";
 import NotFound from "@/pages/not-found";
 import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState } from "react";
@@ -30,6 +32,8 @@ function Router() {
       <Route path="/reportar">
         {() => <ReportPage sessionId={sessionId} />}
       </Route>
+      <Route path="/recursos" component={ResourcesPage} />
+      <Route path="/aprender" component={LearnPage} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -29,18 +29,19 @@ export default function Navigation() {
           </li>
           
           <li>
-            <button 
-              onClick={() => setActiveSection('resources')}
-              className={`w-full flex items-center p-3.5 rounded-xl transition-all duration-300 ${
-                activeSection === 'resources' 
-                  ? 'bg-gradient-to-r from-blue-500 to-teal-500 text-white shadow-md transform scale-105' 
-                  : 'text-slate-700 hover:bg-slate-100 hover:shadow-sm'
-              }`}
-            >
-              <span className="material-icons mr-3">auto_stories</span>
-              <span className="font-medium">Recursos</span>
-              {activeSection === 'resources' && <span className="ml-auto text-xs bg-white text-blue-600 px-2 py-0.5 rounded-full">Activo</span>}
-            </button>
+            <Link href="/recursos">
+              <a
+                className={`w-full flex items-center p-3.5 rounded-xl transition-all duration-300 ${
+                  location === '/recursos'
+                    ? 'bg-gradient-to-r from-blue-500 to-teal-500 text-white shadow-md transform scale-105' 
+                    : 'text-slate-700 hover:bg-slate-100 hover:shadow-sm'
+                }`}
+              >
+                <span className="material-icons mr-3">auto_stories</span>
+                <span className="font-medium">Recursos</span>
+                {location === '/recursos' && <span className="ml-auto text-xs bg-white text-blue-600 px-2 py-0.5 rounded-full">Activo</span>}
+              </a>
+            </Link>
           </li>
           
           <li>
@@ -60,18 +61,19 @@ export default function Navigation() {
           </li>
           
           <li>
-            <button 
-              onClick={() => setActiveSection('learn')}
-              className={`w-full flex items-center p-3.5 rounded-xl transition-all duration-300 ${
-                activeSection === 'learn' 
-                  ? 'bg-gradient-to-r from-blue-500 to-teal-500 text-white shadow-md transform scale-105' 
-                  : 'text-slate-700 hover:bg-slate-100 hover:shadow-sm'
-              }`}
-            >
-              <span className="material-icons mr-3">school</span>
-              <span className="font-medium">Aprender</span>
-              {activeSection === 'learn' && <span className="ml-auto text-xs bg-white text-blue-600 px-2 py-0.5 rounded-full">Activo</span>}
-            </button>
+            <Link href="/aprender">
+              <a
+                className={`w-full flex items-center p-3.5 rounded-xl transition-all duration-300 ${
+                  location === '/aprender'
+                    ? 'bg-gradient-to-r from-blue-500 to-teal-500 text-white shadow-md transform scale-105' 
+                    : 'text-slate-700 hover:bg-slate-100 hover:shadow-sm'
+                }`}
+              >
+                <span className="material-icons mr-3">school</span>
+                <span className="font-medium">Aprender</span>
+                {location === '/aprender' && <span className="ml-auto text-xs bg-white text-blue-600 px-2 py-0.5 rounded-full">Activo</span>}
+              </a>
+            </Link>
           </li>
         </ul>
       </div>
