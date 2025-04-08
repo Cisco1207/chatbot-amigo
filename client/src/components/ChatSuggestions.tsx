@@ -19,7 +19,7 @@ export default function ChatSuggestions() {
         <button 
           key={index}
           onClick={() => sendMessage(suggestion.text)}
-          className="bg-gradient-to-r from-blue-400 to-indigo-500 hover:from-indigo-500 hover:to-purple-500 text-white py-3 px-5 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md flex items-center space-x-2"
+          className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-teal-500 hover:to-blue-500 text-white py-3 px-5 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md flex items-center space-x-2"
         >
           <span className="text-lg">{suggestion.icon}</span>
           <span>{suggestion.text}</span>

@@ -18,14 +18,14 @@ export default function ChatSection() {
 
   return (
     <div className="max-w-3xl mx-auto px-4">
-      <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl shadow-lg p-6 mb-6 border border-purple-200 animate-fadeIn">
+      <div className="bg-gradient-to-r from-blue-100 to-teal-100 rounded-2xl shadow-lg p-6 mb-6 border border-blue-200 animate-fadeIn">
         <div className="flex items-center mb-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 flex items-center justify-center text-white mr-3 shadow-md">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-teal-600 flex items-center justify-center text-white mr-3 shadow-md">
             <span className="material-icons">smart_toy</span>
           </div>
           <div>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 text-transparent bg-clip-text">¡Hola! Soy tu ChatAmigo</h2>
-            <p className="text-sm text-purple-500">¡Estoy aquí para ayudarte! 🤗</p>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-teal-600 text-transparent bg-clip-text">¡Hola! Soy tu ChatAmigo</h2>
+            <p className="text-sm text-blue-500">¡Estoy aquí para ayudarte! 🤗</p>
           </div>
         </div>
         
@@ -34,8 +34,8 @@ export default function ChatSection() {
           estoy aquí para escucharte y darte consejos.
         </p>
         
-        <div className="flex items-center p-4 bg-white rounded-xl shadow-sm border border-purple-100">
-          <span className="material-icons text-pink-500 mr-3">privacy_tip</span>
+        <div className="flex items-center p-4 bg-white rounded-xl shadow-sm border border-blue-100">
+          <span className="material-icons text-teal-500 mr-3">privacy_tip</span>
           <p className="text-sm text-gray-600">Este chat es <strong>privado y seguro</strong>. No almacenamos tus datos personales. 
           Puedes hablar con confianza.</p>
         </div>
@@ -44,14 +44,14 @@ export default function ChatSection() {
       {/* Chat Messages Container */}
       <div 
         ref={messagesContainerRef}
-        className="mb-6 space-y-2 bg-gradient-to-b from-white to-purple-50 p-5 rounded-2xl max-h-[400px] overflow-y-auto shadow-inner"
+        className="mb-6 space-y-2 bg-gradient-to-b from-white to-blue-50 p-5 rounded-2xl max-h-[400px] overflow-y-auto shadow-inner"
       >
         {isLoading && messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-6 h-[200px]">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 flex items-center justify-center text-white animate-bounce mb-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-teal-600 flex items-center justify-center text-white animate-bounce mb-3">
               <span className="material-icons">chat</span>
             </div>
-            <span className="text-purple-500 font-medium">Iniciando conversación...</span>
+            <span className="text-blue-500 font-medium">Iniciando conversación...</span>
           </div>
         ) : (
           <>
