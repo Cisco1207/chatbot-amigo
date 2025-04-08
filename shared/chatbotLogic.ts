@@ -1,10 +1,109 @@
 // Shared chatbot logic for server-side response generation
 
+// Helper to get quick reply suggestions based on context
+export function getQuickReplySuggestions(lastMessage: string): string[] {
+  const normalizedMessage = lastMessage.toLowerCase().trim();
+  
+  // Default quick replies that apply to most conversations
+  const defaultSuggestions = [
+    "¿Qué puedo hacer si sufro bullying?",
+    "¿Cómo puedo ayudar a un amigo?",
+    "¿Qué es el cyberbullying?",
+    "Necesito ayuda urgente",
+    "¿Puedo hablar con alguien más?"
+  ];
+  
+  // Context-specific quick replies
+  if (normalizedMessage.includes("bullying físico") || 
+      normalizedMessage.includes("golpea") || 
+      normalizedMessage.includes("pega")) {
+    return [
+      "¿Debo defenderme físicamente?",
+      "¿Cómo puedo evitar estos encuentros?",
+      "¿Qué debo decirle a mis padres?",
+      "Tengo miedo de ir a la escuela"
+    ];
+  } else if (normalizedMessage.includes("cyberbullying") || 
+             normalizedMessage.includes("internet") || 
+             normalizedMessage.includes("redes")) {
+    return [
+      "¿Debo eliminar mis redes sociales?",
+      "¿Cómo bloqueo a alguien?",
+      "¿Debo reportarlo?",
+      "¿Cómo guardo evidencia?"
+    ];
+  } else if (normalizedMessage.includes("amigos") || 
+             normalizedMessage.includes("solo") || 
+             normalizedMessage.includes("sola")) {
+    return [
+      "¿Cómo puedo hacer nuevos amigos?",
+      "Me siento muy solo/a",
+      "¿Por qué nadie quiere estar conmigo?",
+      "¿Cómo puedo ser más social?"
+    ];
+  }
+  
+  return defaultSuggestions;
+}
+
 // Helper to match user inputs with predefined responses
 export function getChatbotResponse(userMessage: string): string {
   const normalizedMessage = userMessage.toLowerCase().trim();
   
-  // Keywords map for pattern matching
+  // Greeting responses (handle first to prioritize)
+  const greetings = ['hola', 'hello', 'hi', 'hey', 'saludos', 'buenos días', 'buenas tardes', 'buenas noches', 'qué tal'];
+  if (greetings.some(greeting => normalizedMessage.startsWith(greeting))) {
+    const greetingResponses = [
+      "¡Hola! Soy tu asistente contra el bullying. ¿En qué puedo ayudarte hoy?",
+      "¡Hola! Estoy aquí para escucharte y ayudarte con situaciones de bullying. ¿Cómo te sientes hoy?",
+      "¡Saludos! Me alegra que estés aquí. Puedes contarme cualquier situación que te preocupe relacionada con el bullying.",
+      "¡Hola! Soy tu amigo virtual contra el bullying. ¿Hay algo específico de lo que quieras hablar hoy?"
+    ];
+    return greetingResponses[Math.floor(Math.random() * greetingResponses.length)];
+  }
+  
+  // Self-introduction responses
+  if (normalizedMessage.includes('quién eres') || 
+      normalizedMessage.includes('qué eres') || 
+      normalizedMessage.includes('cómo te llamas')) {
+    return "Soy un asistente virtual especializado en ayudar a niños y adolescentes que enfrentan situaciones de bullying. Estoy aquí para escucharte, ofrecerte consejos y recursos útiles. ¿Cómo puedo ayudarte hoy?";
+  }
+  
+  // Thank you responses
+  if (normalizedMessage.includes('gracias') || 
+      normalizedMessage.includes('thanks') || 
+      normalizedMessage.includes('te lo agradezco')) {
+    const thankResponses = [
+      "¡De nada! Estoy aquí para ayudarte. ¿Hay algo más en lo que pueda apoyarte?",
+      "No hay de qué. Recuerda que siempre puedes venir a hablar conmigo. ¿Hay algo más que quieras compartir?",
+      "Me alegra poder ayudarte. ¿Te gustaría hablar de algo más?",
+      "Para eso estoy aquí. ¿Necesitas algún otro consejo o recursos?"
+    ];
+    return thankResponses[Math.floor(Math.random() * thankResponses.length)];
+  }
+  
+  // Goodbye responses
+  if (normalizedMessage.includes('adiós') || 
+      normalizedMessage.includes('chao') || 
+      normalizedMessage.includes('hasta luego') || 
+      normalizedMessage.includes('bye')) {
+    const goodbyeResponses = [
+      "¡Hasta pronto! Recuerda que estoy aquí cuando me necesites. Cuídate mucho.",
+      "Adiós por ahora. Recuerda que eres valioso/a y mereces respeto. Estoy aquí cuando quieras hablar de nuevo.",
+      "Nos vemos pronto. Recuerda que no estás solo/a en esto. ¡Cuídate!",
+      "¡Hasta luego! Si necesitas ayuda en cualquier momento, no dudes en volver a escribirme."
+    ];
+    return goodbyeResponses[Math.floor(Math.random() * goodbyeResponses.length)];
+  }
+  
+  // How are you responses
+  if (normalizedMessage.includes('cómo estás') || 
+      normalizedMessage.includes('cómo te va') || 
+      normalizedMessage.includes('qué tal estás')) {
+    return "Estoy bien, gracias por preguntar. Lo más importante es cómo estás tú. ¿Hay algo con lo que pueda ayudarte hoy?";
+  }
+  
+  // Keywords map for pattern matching (original responses)
   const responseMap: [string[], string][] = [
     [
       ['burla', 'burlan', 'insulta', 'insultan', 'molestan', 'dicen', 'bullying verbal', 'apodos', 'nombres'],
@@ -57,6 +156,14 @@ export function getChatbotResponse(userMessage: string): string {
     [
       ['no me ayudan', 'no hacen nada', 'ignoran', 'no importa'],
       "Es frustrante cuando sientes que nadie te ayuda. A veces los adultos no entienden la gravedad de la situación o no saben cómo actuar. ¿Has intentado hablar con otro adulto diferente o ser muy específico sobre exactamente qué está pasando y cómo te afecta?"
+    ],
+    [
+      ['qué es bullying', 'qué significa bullying', 'definición de bullying', 'dime sobre el bullying'],
+      "El bullying es un comportamiento agresivo y repetitivo donde alguien con más poder daña intencionalmente a otra persona que tiene menos poder. Puede ser verbal (insultos), físico (golpes), social (exclusión) o en internet (cyberbullying). ¿Te gustaría saber más sobre algún tipo específico?"
+    ],
+    [
+      ['qué hago', 'qué debo hacer', 'cómo reacciono', 'cómo actuó'],
+      "Si estás experimentando bullying, estos son algunos pasos importantes: 1) Mantén la calma y aléjate. 2) Habla con un adulto de confianza como padres o profesores. 3) Documenta lo sucedido (fechas, nombres, lugares). 4) Recuerda que no es tu culpa y no estás solo/a. ¿Qué paso te resulta más difícil?"
     ]
   ];
   

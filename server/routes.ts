@@ -6,7 +6,7 @@ import {
   insertChatMessageSchema,
   insertReportSchema
 } from "@shared/schema";
-import { getChatbotResponse } from "../shared/chatbotLogic";
+import { getChatbotResponse, getQuickReplySuggestions } from "../shared/chatbotLogic";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes
@@ -37,6 +37,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate bot response
       const botResponse = getChatbotResponse(parsed.data.content);
       
+      // Generate quick reply suggestions based on the context
+      const quickReplies = getQuickReplySuggestions(botResponse);
+      
       // Store bot response
       const botMessage = await storage.createChatMessage({
         sessionId: parsed.data.sessionId,
@@ -44,7 +47,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sender: 'bot'
       });
       
-      res.json({ userMessage, botMessage });
+      res.json({ 
+        userMessage, 
+        botMessage,
+        quickReplies 
+      });
     } catch (error) {
       res.status(500).json({ message: 'Error al procesar el mensaje', error });
     }
@@ -53,7 +60,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Session initialization
   app.get('/api/session/new', (req: Request, res: Response) => {
     const sessionId = uuidv4();
-    res.json({ sessionId });
+    const welcomeMessage = "¡Hola! Soy tu asistente contra el bullying. Estoy aquí para escucharte, ayudarte y brindarte recursos útiles. ¿En qué puedo ayudarte hoy?";
+    const quickReplies = [
+      "¿Qué es el bullying?",
+      "Estoy sufriendo bullying",
+      "Quiero ayudar a un amigo",
+      "Soy testigo de bullying",
+      "¿Cómo prevengo el bullying?"
+    ];
+    
+    res.json({ 
+      sessionId,
+      welcomeMessage,
+      quickReplies
+    });
   });
 
   // Reports routes
