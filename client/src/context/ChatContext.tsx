@@ -1,7 +1,6 @@
-import React, { createContext, useState, useEffect, ReactNode, useCallback } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { getChatbotResponse } from "@/lib/chatLogic";
 
 interface ChatMessage {
   content: string;
@@ -27,173 +26,121 @@ interface ChatProviderProps {
 }
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [quickReplies, setQuickReplies] = useState<string[]>([]);
-  const [sessionId, setSessionId] = useState<string>("");
-
-  // Initialize session ID
-  useEffect(() => {
-    const storedSessionId = localStorage.getItem("chatSessionId");
-    if (storedSessionId) {
-      setSessionId(storedSessionId);
-    } else {
-      // Get a new session ID from the server
-      fetch("/api/session/new")
-        .then(res => res.json())
-        .then(data => {
-          setSessionId(data.sessionId);
-          localStorage.setItem("chatSessionId", data.sessionId);
-          
-          // Add welcome message and initial quick replies
-          if (data.welcomeMessage) {
-            setMessages([{
-              content: data.welcomeMessage,
-              sender: "bot"
-            }]);
-          }
-          
-          if (data.quickReplies && Array.isArray(data.quickReplies)) {
-            setQuickReplies(data.quickReplies);
-          }
-        })
-        .catch(error => {
-          console.error("Error getting session ID:", error);
-          // Fallback to client-side generated ID
-          const newId = uuidv4();
-          setSessionId(newId);
-          localStorage.setItem("chatSessionId", newId);
-          
-          // Add default welcome message and quick replies
-          setMessages([{
-            content: "¡Hola! Soy tu asistente contra el bullying. ¿En qué puedo ayudarte hoy?",
-            sender: "bot"
-          }]);
-          
-          setQuickReplies([
-            "¿Qué es el bullying?",
-            "Estoy sufriendo bullying",
-            "Quiero ayudar a un amigo",
-            "Soy testigo de bullying",
-            "¿Cómo prevengo el bullying?"
-          ]);
-        });
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      content: "¡Hola! Soy tu asistente contra el bullying. Estoy aquí para escucharte, ayudarte y brindarte recursos útiles. ¿En qué puedo ayudarte hoy?",
+      sender: "bot"
     }
-  }, []);
+  ]);
+  const [quickReplies, setQuickReplies] = useState<string[]>([
+    "¿Qué es el bullying?",
+    "Estoy sufriendo bullying",
+    "Quiero ayudar a un amigo",
+    "Soy testigo de bullying",
+    "¿Cómo prevengo el bullying?"
+  ]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [sessionId] = useState<string>(uuidv4());
 
-  // Fetch messages for existing session
-  const { isLoading: isLoadingMessages } = useQuery({
-    queryKey: [`/api/chat/${sessionId}`],
-    enabled: !!sessionId,
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-    select: (data: ChatMessage[]) => data,
-    onSettled: (data: ChatMessage[] | undefined) => {
-      if (data && data.length > 0) {
-        setMessages(data);
-      } else {
-        // Add initial bot message if no messages exist and no welcome message was set
-        if (messages.length === 0) {
-          setMessages([
-            {
-              content: "¡Hola! Puedes hablar conmigo sobre cualquier situación de bullying que estés viviendo o viendo. ¿En qué puedo ayudarte hoy?",
-              sender: "bot"
-            }
-          ]);
-          
-          setQuickReplies([
-            "¿Qué es el bullying?",
-            "Estoy sufriendo bullying",
-            "Quiero ayudar a un amigo",
-            "Soy testigo de bullying",
-            "¿Cómo prevengo el bullying?"
-          ]);
-        }
-      }
-    }
-  });
-
-  const messageMutation = useMutation({
-    mutationFn: async (content: string) => {
-      const res = await apiRequest("POST", "/api/chat", {
-        sessionId,
-        content,
-        sender: "user"
-      });
-      return res.json();
-    },
-  });
-
-  const sendMessage = useCallback((content: string) => {
-    if (!sessionId) return;
-
-    // Optimistically update UI
+  const sendMessage = (content: string) => {
+    if (!content.trim()) return;
+    
+    // Add user message
     const userMessage: ChatMessage = { content, sender: "user" };
     setMessages(prev => [...prev, userMessage]);
+    
+    // Set loading
+    setIsLoading(true);
 
-    // Send to server
-    messageMutation.mutate(content, {
-      onSuccess: (data) => {
-        if (data.botMessage) {
-          setMessages(prev => [...prev, {
-            content: data.botMessage.content,
-            sender: "bot"
-          }]);
-          
-          // Update quick replies if available
-          if (data.quickReplies && Array.isArray(data.quickReplies)) {
-            setQuickReplies(data.quickReplies);
-          }
-        }
-      },
-      onError: (error) => {
-        console.error("Error sending message:", error);
-        // Add fallback bot response on error
-        setMessages(prev => [...prev, {
-          content: "Lo siento, estoy teniendo problemas para responder. Por favor, intenta de nuevo más tarde.",
-          sender: "bot"
-        }]);
-        
-        // Set fallback quick replies
-        setQuickReplies([
-          "¿Puedes intentar otra vez?",
-          "¿Qué es el bullying?",
-          "Necesito ayuda urgente"
-        ]);
-      }
-    });
-  }, [sessionId, messageMutation]);
-
-  // Handle greeting messages (like "hola") client-side for instant response 
-  useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage && lastMessage.sender === 'user') {
-      const greetings = ['hola', 'hello', 'hi', 'hey', 'saludos', 'buenos días', 'buenas tardes', 'buenas noches', 'qué tal'];
-      const normalizedContent = lastMessage.content.toLowerCase().trim();
+    // Short timeout to simulate processing
+    setTimeout(() => {
+      // Generate bot response
+      const botResponse = getChatbotResponse(content);
       
-      const isGreeting = greetings.some(greeting => normalizedContent.startsWith(greeting));
+      // Add bot response
+      const botMessage: ChatMessage = { content: botResponse, sender: "bot" };
+      setMessages(prev => [...prev, botMessage]);
       
-      // If it's a simple greeting, immediately show a response before server responds
-      if (isGreeting && !messageMutation.isPending) {
-        const greetingResponse = "¡Hola! Soy tu asistente contra el bullying. ¿En qué puedo ayudarte hoy?";
-        
-        // Only add the immediate response if we haven't already added a bot message
-        const lastTwoMessages = messages.slice(-2);
-        if (!(lastTwoMessages.length > 1 && lastTwoMessages[0].sender === 'user' && lastTwoMessages[1].sender === 'bot')) {
-          setMessages(prev => [...prev, {
-            content: greetingResponse,
-            sender: "bot"
-          }]);
-        }
-      }
+      // Update quick replies based on context
+      updateQuickReplies(content, botResponse);
+      
+      // Clear loading state
+      setIsLoading(false);
+    }, 600);
+  };
+  
+  // Function to update quick replies based on conversation context
+  const updateQuickReplies = (userMessage: string, botResponse: string) => {
+    const lowerCaseMsg = userMessage.toLowerCase();
+    
+    // Specific quick replies for different contexts
+    if (lowerCaseMsg.includes("bullying físico") || 
+        lowerCaseMsg.includes("golpea") || 
+        lowerCaseMsg.includes("empuja")) {
+      setQuickReplies([
+        "¿Debo defenderme físicamente?",
+        "¿Cómo puedo evitar estos encuentros?",
+        "¿Debo decirle a mis padres?",
+        "Tengo miedo de ir a la escuela"
+      ]);
+    } 
+    else if (lowerCaseMsg.includes("cyber") || 
+             lowerCaseMsg.includes("internet") || 
+             lowerCaseMsg.includes("redes sociales")) {
+      setQuickReplies([
+        "¿Debo eliminar mis redes sociales?",
+        "¿Cómo bloqueo a alguien?",
+        "¿Debo reportarlo?",
+        "¿Cómo guardo evidencia?"
+      ]);
     }
-  }, [messages, messageMutation.isPending]);
+    else if (lowerCaseMsg.includes("amigo") || 
+             lowerCaseMsg.includes("ayudar")) {
+      setQuickReplies([
+        "¿Cómo puedo ayudar sin involucrarme?",
+        "¿Debo hablar con un adulto?",
+        "Mi amigo no quiere ayuda",
+        "¿Qué hago si el bullying es grave?"
+      ]);
+    }
+    else if (lowerCaseMsg.includes("qué es") || 
+             lowerCaseMsg.includes("definición")) {
+      setQuickReplies([
+        "¿Qué tipos de bullying existen?",
+        "¿Cómo identifico el bullying?",
+        "¿Por qué ocurre el bullying?",
+        "¿Puedo sufrir bullying sin darme cuenta?"
+      ]);
+    }
+    else if (lowerCaseMsg.includes("hola") || 
+             lowerCaseMsg.includes("saludos") || 
+             lowerCaseMsg.includes("buenos días")) {
+      setQuickReplies([
+        "¿Qué es el bullying?",
+        "Estoy sufriendo bullying",
+        "Quiero ayudar a un amigo",
+        "Soy testigo de bullying",
+        "¿Cómo prevengo el bullying?"
+      ]);
+    }
+    else {
+      // Default quick replies if no specific context
+      setQuickReplies([
+        "¿Qué puedo hacer si sufro bullying?",
+        "¿Cómo puedo ayudar a un amigo?",
+        "¿Qué es el cyberbullying?",
+        "Necesito ayuda urgente",
+        "¿Puedo hablar con alguien más?"
+      ]);
+    }
+  };
 
   return (
     <ChatContext.Provider value={{
       messages,
       quickReplies,
       sendMessage,
-      isLoading: isLoadingMessages || messageMutation.isPending
+      isLoading
     }}>
       {children}
     </ChatContext.Provider>
