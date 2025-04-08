@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { AppContext } from "@/context/AppContext";
+import AuthButtons from "./Auth/AuthButtons";
 
 export default function Header() {
   const { toggleHelpModal } = useContext(AppContext);
@@ -17,6 +18,9 @@ export default function Header() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <div className="hidden md:flex mr-2">
+            <AuthButtons />
+          </div>
           <button 
             onClick={toggleHelpModal}
             className="flex items-center gap-1 text-slate-600 px-3 py-1.5 rounded-full hover:bg-slate-100 transition border border-slate-200 shadow-sm text-sm font-medium"
