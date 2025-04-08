@@ -95,10 +95,10 @@ export default function Report({ sessionId }: ReportProps) {
       <div className="container mx-auto p-4 max-w-2xl">
         <h1 className="text-2xl font-bold text-primary mb-6">Reportar una Situación de Bullying</h1>
         
-        <Alert className="mb-6 bg-primary bg-opacity-10 border-primary">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Importante</AlertTitle>
-          <AlertDescription>
+        <Alert className="mb-6 bg-primary/10 border-primary text-neutral-800">
+          <AlertCircle className="h-4 w-4 text-primary" />
+          <AlertTitle className="text-primary font-semibold">Importante</AlertTitle>
+          <AlertDescription className="text-neutral-700">
             Este formulario es confidencial. No necesitas proporcionar nombres completos o detalles que te identifiquen si no te sientes cómodo.
           </AlertDescription>
         </Alert>
