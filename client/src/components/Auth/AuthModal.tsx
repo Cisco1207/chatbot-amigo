@@ -105,11 +105,15 @@ export default function AuthModal() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button 
-          variant="outline" 
-          className="mr-2 border-primary text-primary hover:bg-primary/10"
+          variant="ghost" 
+          className="mr-2 hover:bg-primary/10 text-primary font-medium hover:text-primary/90 relative overflow-hidden group rounded-xl"
           aria-label="Iniciar Sesión"
         >
-          Iniciar Sesión
+          <span className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/10 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+          <span className="relative flex items-center">
+            <span className="material-icons text-sm mr-1.5">login</span>
+            Iniciar Sesión
+          </span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -163,8 +167,21 @@ export default function AuthModal() {
                   </a>
                 </div>
                 
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
-                  {loginMutation.isPending ? "Iniciando sesión..." : "Iniciar Sesión"}
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 shadow-md transition-all duration-300 hover:shadow-lg rounded-xl relative overflow-hidden group"
+                >
+                  <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
+                  <span className="relative">
+                    {loginMutation.isPending ? (
+                      <span className="flex items-center justify-center">
+                        <span className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                        Iniciando sesión...
+                      </span>
+                    ) : (
+                      "Iniciar Sesión"
+                    )}
+                  </span>
                 </Button>
               </form>
             </Form>
@@ -232,8 +249,21 @@ export default function AuthModal() {
                   )}
                 />
                 
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
-                  {registerMutation.isPending ? "Creando cuenta..." : "Crear Cuenta"}
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 shadow-md transition-all duration-300 hover:shadow-lg rounded-xl relative overflow-hidden group"
+                >
+                  <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
+                  <span className="relative">
+                    {registerMutation.isPending ? (
+                      <span className="flex items-center justify-center">
+                        <span className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                        Creando cuenta...
+                      </span>
+                    ) : (
+                      "Crear Cuenta"
+                    )}
+                  </span>
                 </Button>
               </form>
             </Form>

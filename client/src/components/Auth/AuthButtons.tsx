@@ -12,8 +12,12 @@ export default function AuthButtons() {
       
       <Dialog open={registerOpen} onOpenChange={setRegisterOpen}>
         <DialogTrigger asChild>
-          <Button className="bg-primary hover:bg-primary/90">
-            Registrarse
+          <Button className="bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 shadow-md transition-all duration-300 hover:shadow-lg rounded-xl relative overflow-hidden group">
+            <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
+            <span className="relative flex items-center">
+              <span className="material-icons text-sm mr-1.5">person_add</span>
+              Registrarse
+            </span>
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
@@ -62,9 +66,13 @@ export default function AuthButtons() {
                   }, 100);
                 }
               }}
-              className="mt-2 bg-primary hover:bg-primary/90"
+              className="mt-4 bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 shadow-md transition-all duration-300 hover:shadow-lg rounded-xl relative overflow-hidden group"
             >
-              Crear una cuenta
+              <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
+              <span className="relative flex items-center">
+                <span className="material-icons text-sm mr-1.5">how_to_reg</span>
+                Crear una cuenta
+              </span>
             </Button>
           </div>
         </DialogContent>
